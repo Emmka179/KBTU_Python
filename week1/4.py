@@ -4,3 +4,5 @@ here anything
 I'm KBTU student
 '''
 print("Hello, Comments!")
+
+#python comments
