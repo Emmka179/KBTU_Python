@@ -21,12 +21,12 @@ def main():
         alt_held = pressed[pygame.K_LALT] or pressed[pygame.K_RALT]
         ctrl_held = pressed[pygame.K_LCTRL] or pressed[pygame.K_RCTRL]
         
-        # Process events
+        # Обработка событий
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
             if event.type == pygame.KEYDOWN:
-                # Exit conditions
+                # Условия выхода
                 if event.key == pygame.K_w and ctrl_held:
                     return
                 if event.key == pygame.K_F4 and alt_held:
@@ -34,7 +34,7 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     return
                 
-                # Color selection
+                # Выбор цвета
                 if event.key == pygame.K_r:
                     mode = 'red'
                 elif event.key == pygame.K_g:
@@ -42,7 +42,7 @@ def main():
                 elif event.key == pygame.K_b:
                     mode = 'blue'
                 
-                # Tool selection
+                # Выбор инструмента
                 if event.key == pygame.K_p:
                     tool = 'pen'
                 elif event.key == pygame.K_e:
@@ -51,30 +51,30 @@ def main():
                     tool = 'circle'
                 elif event.key == pygame.K_m:
                     tool = 'rectangle'
-                elif event.key == pygame.K_s:  # Square
+                elif event.key == pygame.K_s:  # Квадрат
                     tool = 'square'
-                elif event.key == pygame.K_t:  # Right triangle
+                elif event.key == pygame.K_t:  # Прямоугольный треугольник
                     tool = 'right_triangle'
-                elif event.key == pygame.K_q:  # Equilateral triangle
+                elif event.key == pygame.K_q:  # Равносторонний треугольник
                     tool = 'equilateral_triangle'
-                elif event.key == pygame.K_h:  # Rhombus
+                elif event.key == pygame.K_h:  # Ромб
                     tool = 'rhombus'
             
-            # Mouse button pressed
+            # Нажатие кнопки мыши
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Left click
+                if event.button == 1:  # Левая кнопка
                     start_pos = event.pos
                     drawing = True
                     if tool == 'pen' or tool == 'eraser':
                         points = [event.pos]
-                elif event.button == 3:  # Right click to decrease radius
+                elif event.button == 3:  # Правая кнопка уменьшает радиус
                     radius = max(1, radius - 1)
             
-            # Mouse button released
+            # Отпускание кнопки мыши
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1 and start_pos:
                     end_pos = event.pos
-                    # Draw shapes on canvas when mouse is released
+                    # Рисование фигур на холсте при отпускании мыши
                     if tool == 'circle':
                         center = ((start_pos[0] + end_pos[0]) // 2, (start_pos[1] + end_pos[1]) // 2)
                         radius_circle = int(((end_pos[0] - start_pos[0]) ** 2 + (end_pos[1] - start_pos[1]) ** 2) ** 0.5 / 2)
@@ -99,18 +99,18 @@ def main():
                     start_pos = None
                     drawing = False
             
-            # Mouse movement for free drawing
+            # Движение мыши при рисовании
             if event.type == pygame.MOUSEMOTION:
                 position = event.pos
                 if drawing and (tool == 'pen' or tool == 'eraser'):
                     points.append(position)
                     drawLineBetween(canvas, len(points)-2, points[-2], points[-1], radius, mode if tool == 'pen' else 'black')
 
-        # Clear screen and draw canvas
+        # Очистка экрана и отображение холста
         screen.fill((0, 0, 0))
         screen.blit(canvas, (0, 0))
         
-        # Preview shapes while drawing
+        # Предпросмотр фигур во время рисования
         if drawing and start_pos:
             current_pos = pygame.mouse.get_pos()
             if tool == 'circle':
@@ -138,7 +138,7 @@ def main():
         pygame.display.flip()
         clock.tick(60)
 
-# Helper function to get color values
+# Вспомогательная функция получения цвета
 def get_color(color_mode):
     colors = {
         'blue': (0, 0, 255),
@@ -148,21 +148,21 @@ def get_color(color_mode):
     }
     return colors.get(color_mode, (255, 255, 255))
 
-# Helper function to draw lines for pen/eraser
+# Вспомогательная функция для рисования линий (карандаш/ластик)
 def drawLineBetween(screen, index, start, end, width, color_mode):
     color = get_color(color_mode)
     pygame.draw.line(screen, color, start, end, width * 2)
 
-# Function to draw a right triangle
+# Функция для рисования прямоугольного треугольника
 def draw_right_triangle(surface, start, end, color):
     points = [
-        start,  # First point (start)
-        (end[0], start[1]),  # Second point (right angle base)
-        end  # Third point (hypotenuse end)
+        start,                    # Первая точка (начальная)
+        (end[0], start[1]),       # Вторая точка (основание)
+        end                       # Третья точка (гипотенуза)
     ]
     pygame.draw.polygon(surface, color, points, 2)
 
-# Function to draw an equilateral triangle
+# Функция для рисования равностороннего треугольника
 def draw_equilateral_triangle(surface, start, end, color):
     base_length = ((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2) ** 0.5
     height = base_length * (math.sqrt(3) / 2)
@@ -175,15 +175,15 @@ def draw_equilateral_triangle(surface, start, end, color):
     ]
     pygame.draw.polygon(surface, color, points, 2)
 
-# Function to draw a rhombus
+# Функция для рисования ромба
 def draw_rhombus(surface, start, end, color):
     mid_x = (start[0] + end[0]) / 2
     mid_y = (start[1] + end[1]) / 2
     points = [
-        (start[0], mid_y),  # Left point
-        (mid_x, start[1]),  # Top point
-        (end[0], mid_y),    # Right point
-        (mid_x, end[1])     # Bottom point
+        (start[0], mid_y),  # Левая точка
+        (mid_x, start[1]),  # Верхняя точка
+        (end[0], mid_y),    # Правая точка
+        (mid_x, end[1])     # Нижняя точка
     ]
     pygame.draw.polygon(surface, color, points, 2)
 

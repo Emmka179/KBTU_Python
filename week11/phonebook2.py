@@ -6,7 +6,7 @@ def create_table():
     conn = psycopg2.connect(**load_config())
     cursor = conn.cursor()
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS phonebook (
+        CREATE TABLE IF NOT EXISTS phonebook2 (
             id SERIAL PRIMARY KEY,
             name VARCHAR(100) NOT NULL,
             phone_number VARCHAR(20) NOT NULL
@@ -22,36 +22,37 @@ def insert_from_console():
     name = input("Enter name: ")
     phone = input("Enter phone: ")
     try:
-        cursor.execute("CALL insert_or_update_user(%s, %s);", (name, phone))
+        cursor.execute("CALL insert_or_update_user2(%s, %s);", (name, phone))
     except:
-        cursor.execute("INSERT INTO phonebook (name, phone_number) VALUES (%s, %s);", (name, phone))
+        cursor.execute("INSERT INTO phonebook2 (name, phone_number) VALUES (%s, %s);", (name, phone))
     conn.commit()
     cursor.close()
     conn.close()
 
-def insert_from_csv(filename='insert.csv'):
+def insert_from_csv():
     conn = psycopg2.connect(**load_config())
     cursor = conn.cursor()
     try:
-        with open(filename, newline='', encoding='utf-8') as csvfile:
+        with open("insert2.csv", newline='', encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile)
-            data = [row for row in reader if len(row) >= 2]
+            headers = next(reader)  # пропустить заголовки
+            data = list(reader)
 
-        pg_array = '{{{}}}'.format(','.join(['"{{{0},{1}}}"'.format(r[0], r[1]) for r in data]))
-        cursor.execute("CALL insert_many_users(%s::text[][]);", (pg_array,))
+        for row in data:
+            if len(row) == 2 and row[0].strip() and row[1].strip():
+                cursor.execute("CALL insert_or_update_user2(%s, %s);", (row[0].strip(), row[1].strip()))
+
+        conn.commit()
         print("Batch insert completed.")
     except Exception as e:
-        print("CSV insert error:", e)
-    conn.commit()
-    cursor.close()
-    conn.close()
+        print("Error", e)
 
 def update_user_data():
     conn = psycopg2.connect(**load_config())
     cursor = conn.cursor()
     name = input("Enter name to update: ")
     phone = input("Enter new phone: ")
-    cursor.execute("CALL insert_or_update_user(%s, %s);", (name, phone))
+    cursor.execute("CALL insert_or_update_user2(%s, %s);", (name, phone))
     conn.commit()
     cursor.close()
     conn.close()
@@ -61,9 +62,9 @@ def query_data():
     cursor = conn.cursor()
     choice = input("Enter search pattern (or press Enter to show all): ")
     if choice.strip() == "":
-        cursor.execute("SELECT * FROM phonebook ORDER BY id;")
+        cursor.execute("SELECT * FROM phonebook2 ORDER BY id;")
     else:
-        cursor.execute("SELECT * FROM search_phonebook(%s);", (choice,))
+        cursor.execute("SELECT * FROM search_phonebook2(%s);", (choice,))
     for row in cursor.fetchall():
         print(row)
     cursor.close()
@@ -74,7 +75,7 @@ def query_with_pagination():
     cursor = conn.cursor()
     limit = int(input("Enter limit: "))
     offset = int(input("Enter offset: "))
-    cursor.execute("SELECT * FROM get_paginated_records(%s, %s);", (limit, offset))
+    cursor.execute("SELECT * FROM get_paginated_records2(%s, %s);", (limit, offset))
     for row in cursor.fetchall():
         print(row)
     cursor.close()
@@ -84,7 +85,7 @@ def delete_user():
     conn = psycopg2.connect(**load_config())
     cursor = conn.cursor()
     value = input("Enter username or phone to delete: ")
-    cursor.execute("CALL delete_user(%s);", (value,))
+    cursor.execute("CALL delete_user2(%s);", (value,))
     conn.commit()
     cursor.close()
     conn.close()

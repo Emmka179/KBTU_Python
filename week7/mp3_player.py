@@ -7,18 +7,30 @@ clock = pg.time.Clock()
 
 white = (255, 255, 255)
 black = (0, 0, 0)
-back = pg.image.load(r'background.jpg')
+
+back = pg.image.load(r'C:\Users\bboya\OneDrive\Desktop\pp2\week7\background.jpg')
 
 pg.font.init()
 font = pg.font.Font(None, 36)
 
-music_files = [("songs\\cirrus-palence.mp3", "covers/palence.jpg", "Cirrus - Palence"), 
-               ("songs\\Дорадура-Дора.mp3", "covers/дора.jpeg", "Дорадура - Дора"), 
-               ("songs\\Нас-не-догонят-t.A.T.u.mp3", "covers/tatu.jpg", "Нас не догонят - t.A.T.u")]
+music_files = [
+    (r"C:\Users\bboya\OneDrive\Desktop\pp2\week7\songs\cirrus-palence.mp3",
+     r"C:\Users\bboya\OneDrive\Desktop\pp2\week7\covers\palence.jpg",
+     "Cirrus - Palence"),
+    
+    (r"C:\Users\bboya\OneDrive\Desktop\pp2\week7\songs\Дорадура-Дора.mp3",
+     r"C:\Users\bboya\OneDrive\Desktop\pp2\week7\covers\дора.jpeg",
+     "Дорадура - Дора"),
+    
+    (r"C:\Users\bboya\OneDrive\Desktop\pp2\week7\songs\Нас-не-догонят-t.A.T.u.mp3",
+     r"C:\Users\bboya\OneDrive\Desktop\pp2\week7\covers\tatu.jpg",
+     "Нас не догонят - t.A.T.u")
+]
+
 current_track = 0
 pg.mixer.music.load(music_files[current_track][0])
-
-playing = False  
+# click_sound = pg.mixer.Sound(r"C:\Users\bboya\OneDrive\Desktop\pp2\week7\songs\uletaiu-na-gaiti.mp3") # звук при смене трека
+playing = False
 
 def load_cover():
     try:
@@ -31,7 +43,7 @@ cover_img = load_cover()
 def play_music():
     global playing
     pg.mixer.music.play(-1)
-    playing = True  
+    playing = True
 
 def pause_music():
     global playing
@@ -44,7 +56,8 @@ def pause_music():
 
 def next_track():
     global current_track, cover_img
-    current_track = (current_track + 1) % len(music_files)  
+    # click_sound.play() # воспроизводим звук при смене трека
+    current_track = (current_track + 1) % len(music_files)
     pg.mixer.music.load(music_files[current_track][0])
     play_music()
     cover_img = load_cover()
@@ -52,7 +65,7 @@ def next_track():
 done = False
 
 while not done:
-    screen.blit(back, (0,0))
+    screen.blit(back, (0, 0))
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -73,18 +86,23 @@ while not done:
             elif 100 <= x <= 180 and 500 <= y <= 590:
                 pause_music()
 
+    # Play triangle
     play_triangle = [(350, 450), (350, 650), (450, 550)]
     pg.draw.polygon(screen, black, play_triangle)
 
+    # Pause button
     pg.draw.rect(screen, black, (150, 500, 30, 90))
     pg.draw.rect(screen, black, (100, 500, 30, 90))
 
+    # Next button
     pg.draw.polygon(screen, black, [(650, 500), (650, 600), (700, 550)], 15)
     pg.draw.polygon(screen, black, [(590, 500), (590, 600), (640, 550)], 15)
 
+    # Track title
     text_surface = font.render(music_files[current_track][2], True, black)
     screen.blit(text_surface, (400 - text_surface.get_width() // 2, 50))
 
+    # Cover image
     if cover_img:
         cover_resized = pg.transform.scale(cover_img, (300, 300))
         screen.blit(cover_resized, (250, 100))

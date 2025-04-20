@@ -1,7 +1,5 @@
 import pygame
 import random
-
-# Инициализация Pygame
 pygame.init()
 
 # Параметры окна
@@ -70,8 +68,21 @@ while running:
     # Движение змейки
     new_head = (snake[0][0] + directions[snake_dir][0], snake[0][1] + directions[snake_dir][1])
     
+
+    # Змейка выходит за границу
+    x, y = new_head
+    if x < 0:
+        x = WIDTH - CELL_SIZE
+    elif x >= WIDTH:
+        x = 0
+    if y < 0:
+        y = HEIGHT - CELL_SIZE
+    elif y >= HEIGHT:
+        y = 0
+    new_head = (x, y)
+
     # Проверка на столкновение со стеной или собой
-    if new_head in snake or new_head[0] < 0 or new_head[0] >= WIDTH or new_head[1] < 0 or new_head[1] >= HEIGHT:
+    if new_head in snake:
         running = False
     
     snake.insert(0, new_head)

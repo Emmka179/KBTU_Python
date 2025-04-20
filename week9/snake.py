@@ -12,17 +12,22 @@ pygame.display.set_caption("Snake Game")
 
 # Цвета
 WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+BLACK = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 # Направления движения
-directions = {"UP": (0, -CELL_SIZE), "DOWN": (0, CELL_SIZE), "LEFT": (-CELL_SIZE, 0), "RIGHT": (CELL_SIZE, 0)}
+directions = {
+    "UP": (0, -CELL_SIZE),
+    "DOWN": (0, CELL_SIZE),
+    "LEFT": (-CELL_SIZE, 0),
+    "RIGHT": (CELL_SIZE, 0)
+}
 
 # Инициализация змейки
-snake = [(WIDTH // 2, HEIGHT // 2)]
-snake_dir = "RIGHT"
-speed = 10
+snake = [(WIDTH // 2, HEIGHT // 2)]  # Начальная позиция
+snake_dir = "RIGHT"  # Начальное направление
+speed = 10  # Начальная скорость
 score = 0
 level = 1
 
@@ -46,10 +51,10 @@ while running:
     
     # Отрисовка змейки
     for segment in snake:
-        pygame.draw.rect(screen, BLACK, (*segment, CELL_SIZE, CELL_SIZE))
+        pygame.draw.rect(screen, BLACK, (*segment, CELL_SIZE, CELL_SIZE))  # Проходим по каждому сегменту змейки и рисуем чёрный квадрат
     
     # Проверка таймера еды
-    if pygame.time.get_ticks() - food_timer > FOOD_LIFETIME:
+    if pygame.time.get_ticks() - food_timer > FOOD_LIFETIME:  # прошло больше 5 секунд — создаём новую еду
         food_x, food_y, food_value = generate_food()
         food_timer = pygame.time.get_ticks()
     
@@ -77,9 +82,21 @@ while running:
     
     # Движение змейки
     new_head = (snake[0][0] + directions[snake_dir][0], snake[0][1] + directions[snake_dir][1])
-    
-    # Проверка на столкновение со стеной или собой
-    if new_head in snake or new_head[0] < 0 or new_head[0] >= WIDTH or new_head[1] < 0 or new_head[1] >= HEIGHT:
+
+    # Телепортация при выходе за границы экрана
+    x, y = new_head
+    if x < 0:
+        x = WIDTH - CELL_SIZE
+    elif x >= WIDTH:
+        x = 0
+    if y < 0:
+        y = HEIGHT - CELL_SIZE
+    elif y >= HEIGHT:
+        y = 0
+    new_head = (x, y)
+
+    # Проверка на столкновение с собой
+    if new_head in snake:
         running = False
     
     snake.insert(0, new_head)

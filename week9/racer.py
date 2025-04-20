@@ -28,8 +28,11 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = player_im
-        self.speed = 5
-        self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT - 10))
+        # self.image = pygame.Surface((30, 60))
+        # self.image.fill((255, 0, 0))
+        # self.image = pygame.draw.rect(screen, (50, 50, 50), player_im) #изображение игрока
+        self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT - 10)) #задаёт позицию внизу экрана
+        self.speed = 5 # скорость игрока
     
     def move(self):
         keys = pygame.key.get_pressed()
@@ -37,27 +40,27 @@ class Player(pygame.sprite.Sprite):
             self.rect.move_ip(self.speed, 0)
         if keys[pygame.K_LEFT]:
             self.rect.move_ip(-self.speed, 0)
-        if keys[pygame.K_UP]:
-            self.rect.move_ip(0, -self.speed)
-        if keys[pygame.K_DOWN]:
-            self.rect.move_ip(0, self.speed)
+        # if keys[pygame.K_UP]:
+        #     self.rect.move_ip(0, -self.speed)
+        # if keys[pygame.K_DOWN]:
+        #     self.rect.move_ip(0, self.speed)
         
-        self.rect.clamp_ip(screen.get_rect())
+        self.rect.clamp_ip(screen.get_rect()) #не позволяет выйти за границы экрана
 
 # Класс монеты с разным весом
 class Coin(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(coin_i, (30, 30))
+        self.image = pygame.transform.scale(coin_i, (80, 80)) # уменьшает монету до 30x30
         self.rect = self.image.get_rect()
         self.generate()
     
     def generate(self):
-        self.rect.topleft = (random.randint(0, WIDTH - self.rect.width), 0)
+        self.rect.topleft = (random.randint(0, WIDTH - self.rect.width), 0) # помещает монету в случайное место сверху
         self.value = random.randint(1, 3)  # Вес монеты от 1 до 3
     
     def move(self):
-        self.rect.move_ip(0, 5)
+        self.rect.move_ip(0, 5) # заставляет монету двигаться вниз
         if self.rect.top > HEIGHT:
             self.generate()
 
@@ -66,7 +69,7 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = enemy_im
-        self.speed = 5
+        self.speed = 5 # скорость врага
         self.rect = self.image.get_rect()
         self.generate()
     
@@ -118,8 +121,8 @@ while running:
         sys.exit()
     
     # Отрисовка экрана
-    screen.blit(road, (0, 0))
-    all_sprites.draw(screen)
+    screen.blit(road, (0, 0)) # рисует дорогу
+    all_sprites.draw(screen) # рисует все спрайты
     
     score_text = font.render(f"Score: {count}", True, (0, 0, 0))
     screen.blit(score_text, (10, 10))

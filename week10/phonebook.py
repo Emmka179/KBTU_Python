@@ -2,9 +2,6 @@ import psycopg2
 import csv
 from config import load_config
 
-import psycopg2
-from config import load_config
-
 def create_tables():
     conn = psycopg2.connect(**load_config())
     cursor = conn.cursor()
